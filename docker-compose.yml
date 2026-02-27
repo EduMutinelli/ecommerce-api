@@ -1,9 +1,11 @@
 version: "3.8"
 
 services:
+
   mysql:
     image: mysql:8.0
     container_name: ecommerce-mysql
+    restart: always
     environment:
       MYSQL_DATABASE: ecommerce
       MYSQL_USER: ecommerce_user
@@ -13,19 +15,28 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     build: .
     container_name: ecommerce-api
+    restart: always
     depends_on:
-      - mysql
-      -
+      mysql:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ecommerce
       SPRING_DATASOURCE_USERNAME: ecommerce_user
       SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_PROFILES_ACTIVE: dev
 
 volumes:
   mysql_data:
