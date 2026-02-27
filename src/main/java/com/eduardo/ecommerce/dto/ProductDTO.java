@@ -1,6 +1,5 @@
 package com.eduardo.ecommerce.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,20 +20,14 @@ public class ProductDTO {
     @Min(value = 0, message = "Quantidade não pode ser negativa")
     private Integer quantity;
 
-    // getters e setters
-
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
+    public String getName() { return name; }
     public void setName(String name) {
         this.name = name;
     }
@@ -42,7 +35,6 @@ public class ProductDTO {
     public Double getPrice() {
         return price;
     }
-
     public void setPrice(Double price) {
         this.price = price;
     }
@@ -50,7 +42,6 @@ public class ProductDTO {
     public Integer getQuantity() {
         return quantity;
     }
-
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }

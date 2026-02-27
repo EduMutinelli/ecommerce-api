@@ -1,7 +1,6 @@
 package com.eduardo.ecommerce.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "products")
@@ -21,12 +20,6 @@ public class Product {
     private Integer quantity;
 
     public Product() {
-    }
-
-    public Product(String name, Double price, Integer quantity) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
     }
 
     public Long getId() {
