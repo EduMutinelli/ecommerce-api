@@ -1,9 +1,8 @@
 package com.eduardo.ecommerce.controller;
 
-import com.eduardo.ecommerce.dto.ProductDTO;
 import com.eduardo.ecommerce.dto.UserCreateDTO;
 import com.eduardo.ecommerce.dto.UserResponseDTO;
-import com.eduardo.ecommerce.service.ProductService;
+import com.eduardo.ecommerce.dto.UserUpdateDTO;
 import com.eduardo.ecommerce.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -43,6 +42,14 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateDTO dto
+    ) {
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
 }
