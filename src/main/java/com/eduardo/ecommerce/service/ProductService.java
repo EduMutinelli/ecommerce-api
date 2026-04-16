@@ -1,6 +1,8 @@
 package com.eduardo.ecommerce.service;
 
-import com.eduardo.ecommerce.dto.ProductDTO;
+import com.eduardo.ecommerce.dto.ProductCreateDTO;
+import com.eduardo.ecommerce.dto.ProductResponseDTO;
+import com.eduardo.ecommerce.dto.ProductUpdateDTO;
 import com.eduardo.ecommerce.exception.ResourceNotFoundException;
 import com.eduardo.ecommerce.mapper.ProductMapper;
 import com.eduardo.ecommerce.model.Product;
@@ -8,52 +10,49 @@ import com.eduardo.ecommerce.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
 
     private final ProductRepository repository;
+    private final ProductMapper mapper;
 
-    public ProductService(ProductRepository repository) {
+    public ProductService(ProductRepository repository, ProductMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
-    public ProductDTO create(ProductDTO dto) {
-        Product product = ProductMapper.toEntity(dto);
-        Product saved = repository.save(product);
-        return ProductMapper.toDTO(saved);
+    public ProductResponseDTO create(ProductCreateDTO dto) {
+        return mapper.toResponseDTO(repository.save(mapper.toEntity(dto)));
     }
 
-    public List<ProductDTO> findAll() {
+    public List<ProductResponseDTO> findAll() {
         return repository.findAll()
                 .stream()
-                .map(ProductMapper::toDTO)
-                .collect(Collectors.toList());
+                .map(mapper::toResponseDTO)
+                .toList();
     }
 
-    public ProductDTO findById(Long id) {
+    public ProductResponseDTO findById(Long id) {
         Product product = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
-        return ProductMapper.toDTO(product);
+        return mapper.toResponseDTO(product);
     }
 
-    public ProductDTO update(Long id, ProductDTO dto) {
+    public ProductResponseDTO update(Long id, ProductUpdateDTO dto) {
         Product product = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
-        product.setName(dto.getName());
-        product.setPrice(dto.getPrice());
-        product.setQuantity(dto.getQuantity());
+        product.setName(dto.name());
+        product.setPrice(dto.price());
+        product.setQuantity(dto.quantity());
 
-        Product updated = repository.save(product);
-        return ProductMapper.toDTO(updated);
+        return mapper.toResponseDTO(repository.save(product));
     }
 
     public void delete(Long id) {
         Product product = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
-
         repository.delete(product);
     }
 }
