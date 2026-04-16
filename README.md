@@ -1,219 +1,143 @@
-# 🛒 E-commerce API - Spring Boot
+# 🛒 Ecommerce API
 
-API RESTful desenvolvida com **Spring Boot** para gerenciamento de produtos de um e-commerce.
+API RESTful de e-commerce desenvolvida com Java 17 e Spring Boot 3, seguindo boas práticas de arquitetura backend.
 
-Este projeto foi criado com foco em boas práticas de arquitetura, separação de responsabilidades e uso de tecnologias modernas do ecossistema Java.
-
----
-
-## 🚀 Tecnologias Utilizadas
+## 🚀 Tecnologias
 
 - Java 17
-- Spring Boot
-- Spring Web
+- Spring Boot 3
+- Spring Security + JWT
 - Spring Data JPA
-- MySQL
+- MySQL 8
+- Docker + Docker Compose
 - Maven
-- Docker & Docker Compose
-- Bean Validation (Jakarta Validation)
 
----
-
-## 📌 Funcionalidades
-
-- ✅ Criar produto
-- ✅ Listar todos os produtos
-- ✅ Buscar produto por ID
-- ✅ Atualizar produto
-- ✅ Deletar produto
-- ✅ Tratamento global de exceções
-- ✅ Validação de dados de entrada
-- ✅ Containerização com Docker
-
----
-
-## 🏗️ Arquitetura do Projeto
-
-O projeto segue uma arquitetura em camadas:
+## 🏗️ Arquitetura
 
 ```
-controller → service → repository → database
+Controller → Service → Repository → Database
+                ↓
+             Mapper
+                ↓
+               DTO
 ```
 
-### 📂 Estrutura
+Separação clara de responsabilidades com DTO pattern, tratamento global de exceções e validação de dados.
+
+## 🔐 Autenticação
+
+A API utiliza autenticação via JWT. Endpoints protegidos exigem o token no header:
 
 ```
-com.eduardo.ecommerce
-│
-├── controller        # Camada responsável pelos endpoints (API)
-├── service           # Regras de negócio
-├── repository        # Comunicação com o banco de dados
-├── model             # Entidades JPA
-├── dto               # Objetos de transferência de dados
-├── mapper            # Conversão entre Entity e DTO
-└── exception         # Tratamento global de erros
+Authorization: Bearer <token>
 ```
 
----
+### Permissões por endpoint
 
-## 🔗 Endpoints da API
+| Endpoint | Método | Acesso |
+|---|---|---|
+| `/auth/login` | POST | Público |
+| `/users` | POST | Público |
+| `/products` | GET | Público |
+| `/products/{id}` | GET | Público |
+| `/products` | POST | ADMIN |
+| `/products/{id}` | PUT | ADMIN |
+| `/products/{id}` | DELETE | ADMIN |
+| `/users` | GET | ADMIN |
+| `/users/{id}` | DELETE | ADMIN |
+| `/users/{id}` | GET | Autenticado |
+| `/users/{id}` | PUT | Autenticado |
 
-### ➕ Criar Produto
-```
-POST /products
-```
+## ⚙️ Como rodar o projeto
 
-Body:
-```json
-{
-  "name": "Notebook",
-  "price": 3500.0,
-  "quantity": 10
-}
-```
+### Pré-requisitos
+- Docker
+- Docker Compose
 
----
+### Passo a passo
 
-### 📋 Listar Produtos
-```
-GET /products
-```
-
----
-
-### 🔍 Buscar Produto por ID
-```
-GET /products/{id}
-```
-
----
-
-### ✏ Atualizar Produto
-```
-PUT /products/{id}
-```
-
-Body:
-```json
-{
-  "name": "Notebook Gamer",
-  "price": 4500.0,
-  "quantity": 5
-}
-```
-
----
-
-### ❌ Deletar Produto
-```
-DELETE /products/{id}
-```
-
----
-
-## 💾 Como Rodar Localmente (Sem Docker)
-
-### 1️⃣ Clonar o repositório
-
+**1. Clone o repositório**
 ```bash
 git clone https://github.com/seu-usuario/ecommerce-api.git
 cd ecommerce-api
 ```
 
-### 2️⃣ Configurar o banco MySQL
-
-Crie um banco:
-
-```sql
-CREATE DATABASE ecommerce;
-```
-
-Configure no `application.properties`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce
-spring.datasource.username=seu_usuario
-spring.datasource.password=sua_senha
-```
-
-### 3️⃣ Rodar o projeto
-
+**2. Configure as variáveis de ambiente**
 ```bash
-mvn spring-boot:run
+cp .env.example .env
 ```
+Edite o `.env` com suas credenciais.
 
-A API ficará disponível em:
-
-```
-http://localhost:8080
-```
-
----
-
-## 🐳 Como Rodar com Docker
-
-### 1️⃣ Gerar o JAR
-
+**3. Suba o ambiente**
 ```bash
-mvn clean package -DskipTests
+docker-compose up --build
 ```
 
-### 2️⃣ Subir os containers
+A API estará disponível em `http://localhost:8080`.
 
-```bash
-docker compose up --build
+## 📋 Exemplos de uso
+
+### Criar usuário
+```http
+POST /users
+Content-Type: application/json
+
+{
+  "name": "Eduardo",
+  "email": "edu@email.com",
+  "password": "123456",
+  "role": "ROLE_ADMIN"
+}
 ```
 
-Isso irá subir:
+### Login
+```http
+POST /auth/login
+Content-Type: application/json
 
-- 📦 Container da API
-- 🐬 Container do MySQL
-
-A aplicação ficará disponível em:
-
-```
-http://localhost:8080
-```
-
-Para parar:
-
-```bash
-docker compose down
+{
+  "email": "edu@email.com",
+  "password": "123456"
+}
 ```
 
----
+Resposta:
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9..."
+}
+```
 
-## 🧪 Testes
+### Criar produto (requer token ADMIN)
+```http
+POST /products
+Authorization: Bearer <token>
+Content-Type: application/json
 
-Os endpoints podem ser testados com:
+{
+  "name": "Teclado Mecânico",
+  "price": 299.90,
+  "quantity": 50
+}
+```
 
-- Postman
-- Insomnia
-- Thunder Client (VS Code)
+## 📁 Estrutura do projeto
 
----
+```
+src/main/java/com/eduardo/ecommerce/
+├── config/          # SecurityConfig
+├── controller/      # Controllers REST
+├── dto/             # DTOs de entrada e saída
+├── exception/       # Exceções e handler global
+├── mapper/          # Conversão Entity ↔ DTO
+├── model/           # Entidades JPA
+├── repository/      # Interfaces JPA
+├── security/        # JWT Filter, JwtService, UserDetailsService
+└── service/         # Regras de negócio
+```
 
-## 🛠️ Conceitos Aplicados
+## 🔜 Próximos passos
 
-- API REST
-- Arquitetura em camadas
-- DTO Pattern
-- Mapper Pattern
-- Tratamento global de exceções
-- Validação de dados
-- Containerização
-- Separação de ambientes
-
----
-
-## 👨‍💻 Autor
-
-Desenvolvido por **Eduardo Mutinelli**  
-📍 Campinas - SP  
-🔗 LinkedIn: https://www.linkedin.com/in/eduardomutinelli
-
----
-
-## 📄 Licença
-
-Este projeto foi desenvolvido para fins de estudo e portfólio.
+- [ ] Testes unitários com JUnit 5 e Mockito
+- [ ] Módulo de Pedidos (Order)
+- [ ] Refresh Token
