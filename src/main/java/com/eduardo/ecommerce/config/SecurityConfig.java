@@ -69,6 +69,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/products/{id}").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/users").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/orders").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/orders/{id}/status").hasAuthority("ROLE_ADMIN")
+                        // Autenticado
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
