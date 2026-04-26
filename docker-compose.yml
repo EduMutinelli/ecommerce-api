@@ -39,6 +39,7 @@ services:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
     networks:
       - ecommerce-network
 

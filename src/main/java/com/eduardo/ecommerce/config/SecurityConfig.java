@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products").permitAll()
                         .requestMatchers(HttpMethod.GET, "/products/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/refresh").permitAll()
 
                         // Apenas ADMIN
                         .requestMatchers(HttpMethod.POST, "/products").hasAuthority("ROLE_ADMIN")
